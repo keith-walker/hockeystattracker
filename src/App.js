@@ -1,40 +1,30 @@
-import React, { Component, useState } from 'react';
-import axios from 'axios';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import axios from "axios";
+import { useState } from "react";
+import { BasicTable } from "./table";
 
-const api=axios.create({
-  baseURL: 'https://statsapi.web.nhl.com/api/v1/people/8474141/stats?stats=statsSingleSeason&season=20202021'
-})
+const API_URL =
+  "https://statsapi.web.nhl.com/api/v1/people/8474141/stats?stats=statsSingleSeason&season=20202021";
 
-let stats1;
-let test;
+function App() {
+  const [data, setData] = useState([]);
 
-class App extends Component {
-    state = {
-      stats:[]
+  let apiCall = async () => {
+    try {
+      let data = await axios.get(API_URL);
+      setData(data.data.stats[0].splits[0]);
+    } catch (err) {
+      console.log(err);
     }
-    constructor(){
-      super();
-      api.get('').then(res=>{
-        //console.log(res.data)
-        test=res.data.stats[0].splits[0].season;
-        console.log(test);
-        let stats=JSON.stringify(res.data.stats[0].splits[0], null, 2);
-        console.log(stats);
-        this.state=({stats1: res.data.stats[0].splits[0]});
-        //console.log(this.state);
-      })
-    }
+  };
 
-  render() {
-    return (
-      <div className="App">
-        <pre> {JSON.stringify(stats1, null, 2)} </pre>
-        <b> {test} </b>
-      </div>
-    );
-  }
-
+  return (
+    <div className="App">
+      <BasicTable />
+      <button onClick={apiCall}>Click me</button>
+      <pre> {JSON.stringify(data, null, 2)} </pre>
+    </div>
+  );
 }
+
 export default App;
