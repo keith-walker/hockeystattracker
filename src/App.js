@@ -1,4 +1,5 @@
 import "./App.css";
+import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import HashMap from "hashmap";
@@ -9,12 +10,11 @@ import {
   Typography,
   TextField,
   Box,
+  NativeSelect,
+  InputLabel,
+  FormControl,
 } from "@material-ui/core";
-import MaUTable from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import MaterialTable from "material-table";
 
 const API_URL = "https://statsapi.web.nhl.com";
 
@@ -22,11 +22,16 @@ const getTeamsAndRosters = API_URL + "/api/v1/teams?expand=team.roster";
 
 let initMap = new HashMap();
 
-let season = "20212022";
+const columns = [
+  { title: "Category", field: "Category" },
+  { title: "Values", field: "Values" },
+];
 
 function App() {
   const [data, setData] = useState([]);
   const [playerName, setPlayerName] = useState("");
+  const [season, setSeason] = useState("20212022");
+  const [tableHeader, setTableHeader] = useState("");
 
   let apiCall = async () => {
     try {
@@ -35,7 +40,8 @@ function App() {
       let player = initMap.get(playerName);
       let getPlayerStats = API_URL + player.link + queryParams + season;
       let data = await axios.get(getPlayerStats);
-      setData(data.data.stats[0].splits[0]);
+      let formattedData = data.data.stats[0].splits[0];
+      createTable(formattedData);
       console.log("1 call = " + (Date.now() - start) + "ms");
     } catch (err) {
       console.log(err);
@@ -73,12 +79,40 @@ function App() {
       let queryParams = "/stats?stats=statsSingleSeason&season=";
       let getPlayerStats = API_URL + playerLink + queryParams + season;
       let data = await axios.get(getPlayerStats);
-      setData(data.data.stats[0].splits[0]);
+      let formattedData = data.data.stats[0].splits[0];
+      //setData(formattedData);
+      //col1 will hold the "names"
+      //col2 will hold the "values"
+      createTable(formattedData);
       console.log(data.data.stats[0].splits[0]);
       console.log("2 calls = " + (Date.now() - start) + "ms");
     } catch (err) {
       console.log(err);
     }
+  };
+
+  let createTable = (formattedData) => {
+    let tableFormat = [
+      { Category: "Season", Values: formattedData.season },
+      { Category: "Games Played", Values: formattedData.stat.games },
+      { Category: "Goals", Values: formattedData.stat.goals },
+      { Category: "Assists", Values: formattedData.stat.assists },
+      { Category: "Points", Values: formattedData.stat.points },
+      { Category: "Plus/Minus", Values: formattedData.stat.plusMinus },
+      {
+        Category: "Penalty Minutes",
+        Values: formattedData.stat.penaltyMinutes,
+      },
+      { Category: "Shots", Values: formattedData.stat.shots },
+      { Category: "Time On Ice", Values: formattedData.stat.timeOnIce },
+      {
+        Category: "Time On Ice Per Game",
+        Values: formattedData.stat.timeOnIcePerGame,
+      },
+      { Category: "Shifts", Values: formattedData.stat.shifts },
+    ];
+    setTableHeader(playerName + "'s Stats");
+    setData(tableFormat);
   };
 
   useEffect(() => {
@@ -114,6 +148,23 @@ function App() {
         <Toolbar style={{ justifyContent: "center" }}>
           <Typography component={"span"} variant={"body2"}>
             <Box>
+              <FormControl>
+                <InputLabel variant="standard" htmlFor="uncontrolled-native">
+                  Season
+                </InputLabel>
+                <NativeSelect
+                  defaultValue={season}
+                  inputProps={{
+                    name: "Season",
+                    id: "uncontrolled-native",
+                  }}
+                  onChange={(e) => setSeason(e.target.value)}
+                >
+                  <option value={20192020}>2019-2020</option>
+                  <option value={20202021}>2020-2021</option>
+                  <option value={20212022}>2021-2022</option>
+                </NativeSelect>
+              </FormControl>
               <TextField
                 label="Player Name"
                 type="text"
@@ -135,7 +186,12 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      <pre> {JSON.stringify(data, null, 2)} </pre>
+      <MaterialTable
+        title={tableHeader}
+        data={data}
+        columns={columns}
+        options={{ search: false, paging: false }}
+      />
     </div>
   );
 }
