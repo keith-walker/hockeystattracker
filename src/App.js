@@ -40,8 +40,14 @@ function App() {
       let player = initMap.get(playerName);
       let getPlayerStats = API_URL + player.link + queryParams + season;
       let data = await axios.get(getPlayerStats);
+      //find a way to include the team in this object HERE
       let formattedData = data.data.stats[0].splits[0];
-      createTable(formattedData);
+      createTable(
+        formattedData,
+        player.team,
+        player.position,
+        player.jerseyNumber
+      );
       console.log("1 call = " + (Date.now() - start) + "ms");
     } catch (err) {
       console.log(err);
@@ -84,16 +90,28 @@ function App() {
       //col1 will hold the "names"
       //col2 will hold the "values"
       createTable(formattedData);
-      console.log(data.data.stats[0].splits[0]);
+      console.log(data.data);
       console.log("2 calls = " + (Date.now() - start) + "ms");
     } catch (err) {
       console.log(err);
     }
   };
 
-  let createTable = (formattedData) => {
+  let createTable = (
+    formattedData,
+    playerTeam,
+    playerPosition,
+    jerseyNumber
+  ) => {
+    let formattedSeason =
+      formattedData.season.substring(0, 4) +
+      "-" +
+      formattedData.season.substring(4, 9);
     let tableFormat = [
-      { Category: "Season", Values: formattedData.season },
+      { Category: "Team", Values: playerTeam },
+      { Category: "Position", Values: playerPosition },
+      { Category: "Jersey Number", Values: jerseyNumber },
+      { Category: "Season", Values: formattedSeason },
       { Category: "Games Played", Values: formattedData.stat.games },
       { Category: "Goals", Values: formattedData.stat.goals },
       { Category: "Assists", Values: formattedData.stat.assists },
@@ -115,6 +133,18 @@ function App() {
     setData(tableFormat);
   };
 
+  let createPlayer = (person, team) => {
+    const playerValue = {
+      name: person.person.fullName,
+      jerseyNumber: person.jerseyNumber,
+      team: team.name,
+      position: person.position.name,
+      id: person.person.id,
+      link: person.person.link,
+    };
+    return playerValue;
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -131,9 +161,12 @@ function App() {
           let roster = teams[i].roster.roster;
           for (let j = 0; j < roster.length; j++) {
             innerloop++;
-            initMap.set(roster[j].person.fullName, roster[j].person);
+            //console.log(roster[j]);
+            const playerValue = createPlayer(roster[j], teams[i]);
+            initMap.set(roster[j].person.fullName, playerValue);
           }
         }
+        //console.log(initMap);
         console.log("innerloop= " + innerloop);
         console.log("outerloop= " + outerloop);
       } catch (err) {
@@ -165,15 +198,18 @@ function App() {
                   <option value={20212022}>2021-2022</option>
                 </NativeSelect>
               </FormControl>
+              &nbsp;
               <TextField
                 label="Player Name"
                 type="text"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
               ></TextField>
+              &nbsp;
               <Button color="primary" variant="contained" onClick={apiCall}>
                 1 API Call
               </Button>
+              &nbsp;
               <Button
                 color="primary"
                 variant="contained"
