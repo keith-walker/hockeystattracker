@@ -18,7 +18,10 @@ import MaterialTable from "material-table";
 
 const API_URL = "https://statsapi.web.nhl.com";
 
-const getTeamsAndRosters = API_URL + "/api/v1/teams?expand=team.roster";
+const getTeamsAndRostersWithoutYear =
+  API_URL + "/api/v1/teams?expand=team.roster&season=";
+
+let getTeamsAndRosters = getTeamsAndRostersWithoutYear + "20212022";
 
 let initMap = new HashMap();
 
@@ -35,6 +38,7 @@ function App() {
 
   let apiCall = async () => {
     try {
+      changeSeason();
       var start = Date.now();
       let queryParams = "/stats?stats=statsSingleSeason&season=";
       let player = initMap.get(playerName);
@@ -52,6 +56,13 @@ function App() {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  let changeSeason = (value) => {
+    setSeason(value);
+    //need to reinitialize it everytime the year changes
+    getTeamsAndRosters = getTeamsAndRostersWithoutYear + value;
+    initializePlayerData();
   };
 
   let extraApiCall = async () => {
@@ -108,7 +119,7 @@ function App() {
       "-" +
       formattedData.season.substring(4, 9);
     let tableFormat = [
-      { Category: "Team", Values: playerTeam },
+      { Category: "Current Team", Values: playerTeam },
       { Category: "Position", Values: playerPosition },
       { Category: "Jersey Number", Values: jerseyNumber },
       { Category: "Season", Values: formattedSeason },
@@ -145,7 +156,7 @@ function App() {
     return playerValue;
   };
 
-  useEffect(() => {
+  let initializePlayerData = () => {
     (async () => {
       try {
         let cachedData = await axios.get(getTeamsAndRosters);
@@ -173,6 +184,10 @@ function App() {
         console.log(err);
       }
     })();
+  };
+
+  useEffect(() => {
+    initializePlayerData();
   }, []);
 
   return (
@@ -191,7 +206,7 @@ function App() {
                     name: "Season",
                     id: "uncontrolled-native",
                   }}
-                  onChange={(e) => setSeason(e.target.value)}
+                  onChange={(e) => changeSeason(e.target.value)}
                 >
                   <option value={20192020}>2019-2020</option>
                   <option value={20202021}>2020-2021</option>
@@ -207,16 +222,16 @@ function App() {
               ></TextField>
               &nbsp;
               <Button color="primary" variant="contained" onClick={apiCall}>
-                1 API Call
+                Get Stats
               </Button>
               &nbsp;
-              <Button
+              {/* <Button
                 color="primary"
                 variant="contained"
                 onClick={extraApiCall}
               >
                 2 API Calls
-              </Button>
+              </Button> */}
             </Box>
           </Typography>
         </Toolbar>
