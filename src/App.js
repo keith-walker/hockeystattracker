@@ -21,8 +21,6 @@ const API_URL = "https://statsapi.web.nhl.com";
 const getTeamsAndRostersWithoutYear =
   API_URL + "/api/v1/teams?expand=team.roster&season=";
 
-let getTeamsAndRosters = getTeamsAndRostersWithoutYear + "20212022";
-
 let initMap = new HashMap();
 
 const columns = [
@@ -35,6 +33,9 @@ function App() {
   const [playerName, setPlayerName] = useState("");
   const [season, setSeason] = useState("20212022");
   const [tableHeader, setTableHeader] = useState("");
+  const [getTeamsAndRosters, setTeamsAndRosters] = useState(
+    getTeamsAndRostersWithoutYear + "20212022"
+  );
 
   let apiCall = async () => {
     try {
@@ -61,7 +62,7 @@ function App() {
   let changeSeason = (value) => {
     setSeason(value);
     //need to reinitialize it everytime the year changes
-    getTeamsAndRosters = getTeamsAndRostersWithoutYear + value;
+    setTeamsAndRosters(getTeamsAndRostersWithoutYear + value);
     initializePlayerData();
   };
 
@@ -188,7 +189,7 @@ function App() {
 
   useEffect(() => {
     initializePlayerData();
-  }, []);
+  });
 
   return (
     <div className="App">
@@ -208,6 +209,7 @@ function App() {
                   }}
                   onChange={(e) => changeSeason(e.target.value)}
                 >
+                  {/* <option value={career}>Career</option> */}
                   <option value={20192020}>2019-2020</option>
                   <option value={20202021}>2020-2021</option>
                   <option value={20212022}>2021-2022</option>
