@@ -38,7 +38,6 @@ function App() {
 
   let apiCall = async () => {
     try {
-      changeSeason();
       var start = Date.now();
       let queryParams = "/stats?stats=statsSingleSeason&season=";
       let player = initMap.get(playerName);
