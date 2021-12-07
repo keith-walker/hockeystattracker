@@ -98,9 +98,7 @@ function App() {
       let getPlayerStats = API_URL + playerLink + queryParams + season;
       let data = await axios.get(getPlayerStats);
       let formattedData = data.data.stats[0].splits[0];
-      //setData(formattedData);
-      //col1 will hold the "names"
-      //col2 will hold the "values"
+      //pass the data to the create table functions to make the table objects
       createTable(formattedData);
       console.log(data.data);
       console.log("2 calls = " + (Date.now() - start) + "ms");
