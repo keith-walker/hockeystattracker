@@ -1,7 +1,7 @@
 import "./App.css";
 import React from "react";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import HashMap from "hashmap";
 import {
   Button,
@@ -62,7 +62,8 @@ function App() {
     setSeason(value);
     //need to reinitialize it everytime the year changes
     setTeamsAndRosters(getTeamsAndRostersWithoutYear + value);
-    initializePlayerData();
+    //when we change the value of getTeamsAndRosters, the code below wrapped in the "useCallback" runs automatically since
+    //the hook is a depedency of the usecallback method... SO COOL, NO NEED TO EXPLICITLY CALL THE FUNCTION
   };
 
   let extraApiCall = async () => {
@@ -154,7 +155,37 @@ function App() {
     return playerValue;
   };
 
-  let initializePlayerData = () => {
+  // let initializePlayerData = () => {
+  //   (async () => {
+  //     try {
+  //       let cachedData = await axios.get(getTeamsAndRosters);
+  //       let teams = cachedData.data.teams;
+  //       initMap = new HashMap();
+  //       //teams is an array, loop through this and to teams[i].roster.roster
+  //       //roster is also an array, loop through this array and access the .person element in each element
+  //       //cache the roster[i].person.fullName as the key, and the roster[i].person as the value
+  //       let outerloop = 0;
+  //       let innerloop = 0;
+  //       for (let i = 0; i < teams.length; i++) {
+  //         outerloop++;
+  //         let roster = teams[i].roster.roster;
+  //         for (let j = 0; j < roster.length; j++) {
+  //           innerloop++;
+  //           //console.log(roster[j]);
+  //           const playerValue = createPlayer(roster[j], teams[i]);
+  //           initMap.set(roster[j].person.fullName, playerValue);
+  //         }
+  //       }
+  //       //console.log(initMap);
+  //       console.log("innerloop= " + innerloop);
+  //       console.log("outerloop= " + outerloop);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   })();
+  // };
+
+  let initializePlayerData = useCallback(() => {
     (async () => {
       try {
         let cachedData = await axios.get(getTeamsAndRosters);
@@ -182,11 +213,11 @@ function App() {
         console.log(err);
       }
     })();
-  };
+  }, [getTeamsAndRosters]);
 
   useEffect(() => {
     initializePlayerData();
-  });
+  }, [initializePlayerData]);
 
   return (
     <div className="App">
