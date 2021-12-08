@@ -44,7 +44,6 @@ function App() {
       let player = initMap.get(playerName);
       let getPlayerStats = API_URL + player.link + queryParams + season;
       let data = await axios.get(getPlayerStats);
-      //find a way to include the team in this object HERE
       let formattedData = data.data.stats[0].splits[0];
       createTable(
         formattedData,
@@ -92,15 +91,12 @@ function App() {
           break;
         }
       }
-      console.log("innerloop= " + innerloop);
-      console.log("outerloop= " + outerloop);
       let queryParams = "/stats?stats=statsSingleSeason&season=";
       let getPlayerStats = API_URL + playerLink + queryParams + season;
       let data = await axios.get(getPlayerStats);
       let formattedData = data.data.stats[0].splits[0];
       //pass the data to the create table functions to make the table objects
       createTable(formattedData);
-      console.log(data.data);
       console.log("2 calls = " + (Date.now() - start) + "ms");
     } catch (err) {
       console.log(err);
@@ -155,36 +151,6 @@ function App() {
     return playerValue;
   };
 
-  // let initializePlayerData = () => {
-  //   (async () => {
-  //     try {
-  //       let cachedData = await axios.get(getTeamsAndRosters);
-  //       let teams = cachedData.data.teams;
-  //       initMap = new HashMap();
-  //       //teams is an array, loop through this and to teams[i].roster.roster
-  //       //roster is also an array, loop through this array and access the .person element in each element
-  //       //cache the roster[i].person.fullName as the key, and the roster[i].person as the value
-  //       let outerloop = 0;
-  //       let innerloop = 0;
-  //       for (let i = 0; i < teams.length; i++) {
-  //         outerloop++;
-  //         let roster = teams[i].roster.roster;
-  //         for (let j = 0; j < roster.length; j++) {
-  //           innerloop++;
-  //           //console.log(roster[j]);
-  //           const playerValue = createPlayer(roster[j], teams[i]);
-  //           initMap.set(roster[j].person.fullName, playerValue);
-  //         }
-  //       }
-  //       //console.log(initMap);
-  //       console.log("innerloop= " + innerloop);
-  //       console.log("outerloop= " + outerloop);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   })();
-  // };
-
   //when we change the value of getTeamsAndRosters, the code below wrapped in the "useCallback" runs automatically since
   //the hook is a depedency of the usecallback method... SO COOL, NO NEED TO EXPLICITLY CALL THE FUNCTION anywhere
   let initializePlayerData = useCallback(() => {
@@ -203,14 +169,10 @@ function App() {
           let roster = teams[i].roster.roster;
           for (let j = 0; j < roster.length; j++) {
             innerloop++;
-            //console.log(roster[j]);
             const playerValue = createPlayer(roster[j], teams[i]);
             initMap.set(roster[j].person.fullName, playerValue);
           }
         }
-        //console.log(initMap);
-        console.log("innerloop= " + innerloop);
-        console.log("outerloop= " + outerloop);
       } catch (err) {
         console.log(err);
       }
