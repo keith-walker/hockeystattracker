@@ -17,10 +17,10 @@ This project was built with ReactJS(node).
 
 2.  Install NPM packages
 
-    npm install
-    npm install axios
-    npm install @material-ui/core
-    npm install @material-ui/table
+    - npm install
+    - npm install axios
+    - npm install @material-ui/core
+    - npm install @material-ui/table
 
 3.  To run locally
 
