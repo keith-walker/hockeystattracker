@@ -51,7 +51,6 @@ function App() {
         player.position,
         player.jerseyNumber
       );
-      console.log("1 call = " + (Date.now() - start) + "ms");
     } catch (err) {
       console.log(err);
     }
@@ -97,7 +96,6 @@ function App() {
       let formattedData = data.data.stats[0].splits[0];
       //pass the data to the create table functions to make the table objects
       createTable(formattedData);
-      console.log("2 calls = " + (Date.now() - start) + "ms");
     } catch (err) {
       console.log(err);
     }
