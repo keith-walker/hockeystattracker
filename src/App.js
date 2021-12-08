@@ -185,6 +185,8 @@ function App() {
   //   })();
   // };
 
+  //when we change the value of getTeamsAndRosters, the code below wrapped in the "useCallback" runs automatically since
+  //the hook is a depedency of the usecallback method... SO COOL, NO NEED TO EXPLICITLY CALL THE FUNCTION anywhere
   let initializePlayerData = useCallback(() => {
     (async () => {
       try {

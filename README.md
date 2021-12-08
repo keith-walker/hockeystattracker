@@ -1,3 +1,31 @@
+# Hockey Stat Tracker
+
+This project is a tool for visualizing NHL player stats from the API found [here](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md). This project initializes player data on page load or any time the user changes the season and stores the player name and relating information in a hashmap for retrieval when the user performs a search. When the user searches for a player name, the apiCall method performs a get from the hashmap using the player name and uses the link result from the value to make another API call to pull the player stats.
+
+### Built With
+
+This project was built with ReactJS(node).
+
+- [Material UI](https://github.com/mui-org/material-ui) - UI Library
+- [Axios](https://github.com/axios/axios) - Data fetching & SSR
+
+### Installation
+
+1.  Clone the repo
+
+    git clone https://github.com/keith-walker/hockeystattracker.git
+
+2.  Install NPM packages
+
+    npm install
+    npm install axios
+    npm install @material-ui/core
+    npm install @material-ui/table
+
+3.  To run locally
+
+    npm start
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
